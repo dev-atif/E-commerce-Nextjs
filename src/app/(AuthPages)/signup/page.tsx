@@ -1,13 +1,17 @@
 "use client";
 import Inputfield from "@/app/components/shared/Inputfield";
 import PaswordInput from "@/app/components/shared/PaswordInput";
+import axios from "axios";
 import Image from "next/image";
 import Link from "next/link";
-import React, { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
+
+import React, { useRef, useState } from "react";
+import toast, { Toaster } from "react-hot-toast";
 import { PiUserCircleLight } from "react-icons/pi";
 const page = () => {
   const imageRef = useRef<HTMLInputElement>(null);
-
+  const router = useRouter();
   const [getvalues, setValues] = useState({
     name: "",
     LastName: "",
@@ -43,6 +47,34 @@ const page = () => {
     }
   };
 
+  const submitData = async (e: any) => {
+    e.preventDefault();
+    try {
+      const response = await axios.post(
+        "http://localhost:8080/api/signup",
+        getvalues
+      );
+      if (response.data.success) {
+        const message = response.data.message;
+         //Move to signin page
+         router.push("/login");
+        toast.success(message); // Display the success message to the user
+       
+      } else {
+        const errorMessage = response.data.message;
+        toast.error(errorMessage); // Display the error message to the user
+      }
+    } catch (error: any) {
+      // Handle errors
+      if (error.response && error.response.data && error.response.data.error) {
+        const errorMessage = error.response.data.message;
+        toast.error(errorMessage); // Display the error message to the user
+      } else {
+        console.error("Error submitting data:", error);
+        toast.error("An error occurred"); // Notify user about the error
+      }
+    }
+  };
   return (
     <div>
       <div>
@@ -134,7 +166,11 @@ const page = () => {
                 </div>
                 <div className="my-10">
                   <div className="w-full my-10 text-center">
-                    <button className="bg-red-400 hover:bg-black transition-all transform duration-500 py-2 rounded-md w-1/2 font-medium text-white  text-lg">
+                    <button
+                      type="submit"
+                      onClick={submitData}
+                      className="bg-red-400 hover:bg-black transition-all transform duration-500 py-2 rounded-md w-1/2 font-medium text-white  text-lg"
+                    >
                       Register Now{" "}
                     </button>
                   </div>

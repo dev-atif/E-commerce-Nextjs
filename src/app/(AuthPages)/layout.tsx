@@ -1,3 +1,4 @@
+import { Toaster } from "react-hot-toast";
 import "../globals.css";
 export default function Authlayout({
   children,
@@ -7,7 +8,8 @@ export default function Authlayout({
   return (
     <html>
       <body>
-        
+      <Toaster position="top-center" reverseOrder={false} />
+
         {children}
         </body>
     </html>
