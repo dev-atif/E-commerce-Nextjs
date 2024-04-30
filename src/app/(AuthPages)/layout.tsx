@@ -1,5 +1,6 @@
 import { Toaster } from "react-hot-toast";
 import "../globals.css";
+import { ReduxProvider } from "@/common/ReduxProvider";
 export default function Authlayout({
   children,
 }: Readonly<{
@@ -8,10 +9,12 @@ export default function Authlayout({
   return (
     <html>
       <body>
-      <Toaster position="top-center" reverseOrder={false} />
+        <ReduxProvider>
+          <Toaster position="top-center" reverseOrder={false} />
 
-        {children}
-        </body>
+          {children}
+        </ReduxProvider>
+      </body>
     </html>
   );
 }

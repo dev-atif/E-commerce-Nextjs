@@ -5,17 +5,62 @@ import { FaRegUserCircle } from "react-icons/fa";
 import Inputfield from "@/app/components/shared/Inputfield";
 import PaswordInput from "@/app/components/shared/PaswordInput";
 import Link from "next/link";
+import axios from "axios";
+import toast from "react-hot-toast";
+import { useDispatch } from "react-redux";
+import { CustomUser } from "@/hooks/useCustomUser";
+import { useAppDispatch } from "@/hooks/redux";
+import { setUserDetails } from "@/redux/userSlice";
+import { useRouter } from "next/navigation";
 const page = () => {
-  const [data, setData] = useState({
+  const [userdata, setData] = useState({
     email: "",
     password: "",
   });
+  //Dispatch or store in to redux Store
+  const Dispatch = useAppDispatch();
+  //Custom Hook to get data from Api
+  const { fetchData } = CustomUser();
+  //Use Route to Navigate to login
+  const route = useRouter()
+  
   const handleChange = (e: any) => {
     const { name, value } = e.target;
     setData((prev) => ({
       ...prev,
       [name]: value,
     }));
+  };
+
+  const Handle_Login = async (e: any) => {
+    e.preventDefault();
+
+    try {
+      const response = await axios.post(
+        "http://localhost:8080/api/sign-in",
+        userdata,
+        { withCredentials: true }
+      );
+      if (response.data.success) {
+        const success_message = response.data.message;
+        toast.success(success_message);
+        fetchData().then((data) => {
+          Dispatch(setUserDetails(data));
+        });
+        route.push('/')
+      } else {
+        const error_message = response.data.message;
+        toast.error(error_message);
+      }
+    } catch (error: any) {
+      if (error.response && error.response.data && error.response.data.error) {
+        const errorMessage = error.response.data.message;
+        toast.error(errorMessage);
+      } else {
+        console.warn("Error submitting data:", error);
+        toast.error("An error occurred"); // Notify user about the error
+      }
+    }
   };
   return (
     <div>
@@ -31,7 +76,7 @@ const page = () => {
             <div className="  mt-5">
               <Inputfield
                 name={"email"}
-                value={data.email}
+                value={userdata.email}
                 label="Enter Your Email"
                 type={"email"}
                 onChange={handleChange}
@@ -41,7 +86,7 @@ const page = () => {
               <label className=" font-normal">Enter Your Password</label>
               <PaswordInput
                 name={"password"}
-                value={data.password}
+                value={userdata.password}
                 onChange={handleChange}
               />
             </div>
@@ -51,13 +96,20 @@ const page = () => {
               </span>
             </div>
             <div className="w-full my-10 text-center">
-              <button className="bg-red-400 hover:bg-black transition-all transform duration-500 py-2 rounded-md w-1/2 font-medium text-white  text-lg">
+              <button
+                type="submit"
+                onClick={Handle_Login}
+                className="bg-red-400 hover:bg-black transition-all transform duration-500 py-2 rounded-md w-1/2 font-medium text-white  text-lg"
+              >
                 Login Now{" "}
               </button>
             </div>
             <div className="mt-3 flex  items-center gap-2 text-lg ">
               <span>Don't have an account ?</span>
-              <Link href={'/signup'} className=" text-red-400 cursor-pointer font-normal">
+              <Link
+                href={"/signup"}
+                className=" text-red-400 cursor-pointer font-normal"
+              >
                 SignUp
               </Link>
             </div>

@@ -3,8 +3,23 @@ import Logo from "../shared/Logo";
 import { CiSearch } from "react-icons/ci";
 import { FaRegCircleUser } from "react-icons/fa6";
 import { HiShoppingCart } from "react-icons/hi";
-
+import { useAppSelector } from "@/hooks/redux";
+import { getUser } from "@/redux/userSlice";
+import Link from "next/link";
+interface UserData {
+  _id: string;
+  name: string;
+  LastName: string;
+  number: string;
+  email: string;
+  password: string;
+  profileImage: string;
+  createdAt: string; // Assuming createdAt and updatedAt are strings representing dates
+  updatedAt: string;
+  __v: number;
+}
 const Header = () => {
+  
   return (
     <div className=" bg-white ">
       <div
@@ -46,9 +61,13 @@ const Header = () => {
             </p>
           </div>
           <div>
-            <button className="bg-red-400 text-white px-4 py-1  font-semibold rounded-md hover:bg-black transition-all transform duration-500 ">
-              LogOut
-            </button>
+           
+             
+          
+              <button className="bg-red-400 text-white px-4 py-1  font-semibold rounded-md hover:bg-black transition-all transform duration-500 ">
+                <Link href={"/login"}>Login</Link>
+              </button>
+           
           </div>
         </div>
       </div>
